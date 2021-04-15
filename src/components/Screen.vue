@@ -1,7 +1,12 @@
 <template>
-  <div class="col-span-4 flex justify-end items-center bg-gray-700 text-white px-5">
-    <template v-if="text">{{ text }}</template>
-    <span v-else class="animate-pulse mt-6">__</span>
+  <div class="relative col-span-4 flex justify-end items-center bg-gray-800 text-white px-5">
+    <div class="overflow-hidden text-right">
+      <span v-if="text" class="float-right whitespace-pre pr-5">
+        {{ text }}
+      </span>
+    </div>
+
+    <i class="w-4 absolute bottom-5 right-5 border-b-4 bg-white animate-pulse"></i>
   </div>
 </template>
 
