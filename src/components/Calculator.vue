@@ -51,6 +51,7 @@ export default defineComponent({
     ];
     const operators = ["/", "*", "+", "-"];
     let memory = ref("");
+    let clearOnNextDigit = ref(false);
 
     onMounted(() => {
       const keyboardHandler = new KeyboardCalculatorHandler();
@@ -71,14 +72,19 @@ export default defineComponent({
     }
 
     function addDigit(digit: number | string) {
-      if (memory.value[memory.value.length - 1] === ".") return;
+      if (clearOnNextDigit.value) clear();
+      if (memory.value[memory.value.length - 1] === "." && digit === ".") return;
       if ((!memory.value || lastCharIsOperator(memory.value)) && digit === ".") memory.value += "0";
+
+      clearOnNextDigit.value = false;
       memory.value += `${digit}`;
     }
 
     function addOperator(operator: string) {
       if (!memory.value) return;
       if (lastCharIsOperator(memory.value)) eraseLastDigit();
+
+      clearOnNextDigit.value = false;
       memory.value += ` ${operator} `;
     }
 
@@ -95,6 +101,7 @@ export default defineComponent({
 
       mathExpression = mathExpression.replace(/\b0*((\d+\.\d+|\d+))\b/g, "$1"); // remove octal numeric
       memory.value = `${eval(mathExpression)}`;
+      clearOnNextDigit.value = true;
     }
 
     function eraseLastDigit() {
@@ -105,6 +112,7 @@ export default defineComponent({
       } else {
         memory.value = memory.value.slice(0, memory.value.length - 1);
       }
+      clearOnNextDigit.value = false;
     }
 
     function clear() {
