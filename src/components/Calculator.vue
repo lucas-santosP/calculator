@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="grid grid-rows-6 grid-cols-4 gap-2 p-1 rounded-lg bg-gray-700 w-full my-10 sm:max-w-2xl"
-  >
+  <Grid rows="6" cols="4" gap="2" class="p-2 rounded-lg bg-gray-700 w-full my-10 sm:max-w-xl">
     <Screen :text="memory" />
 
     <Button class="col-span-2 bg-gray-200" @click="clear">Clear</Button>
@@ -26,7 +24,7 @@
     >
       {{ number }}
     </Button>
-    <Button variant="operator" @click="addOperator('s')">-</Button>
+    <Button variant="operator" @click="addOperator('-')">-</Button>
 
     <Button
       v-for="number in buttonPadNumbers[2]"
@@ -41,21 +39,18 @@
     <Button class="col-span-2" @click="addDigit(0)" variant="digit">0</Button>
     <Button @click="addDigit('.')" variant="digit">.</Button>
     <Button variant="operator" @click="calculateResult">=</Button>
-  </div>
+  </Grid>
 </template>
 
 <script lang="ts">
 import { ref, defineComponent, computed } from "vue";
 import Button from "./Button.vue";
 import Screen from "./Screen.vue";
-
-interface IOperators {
-  [key: string]: (a: number, b: number) => number;
-}
+import Grid from "./Grid.vue";
 
 export default defineComponent({
   name: "HelloWorld",
-  components: { Button, Screen },
+  components: { Button, Screen, Grid },
 
   setup: () => {
     const buttonPadNumbers = [
@@ -63,94 +58,53 @@ export default defineComponent({
       [4, 5, 6],
       [1, 2, 3],
     ];
-    const operators: IOperators = {
-      "/": (a: number, b: number) => a / b,
-      "*": (a: number, b: number) => a * b,
-      "+": (a: number, b: number) => a + b,
-      s: (a: number, b: number) => a - b,
-    };
+    const operators = ["/", "*", "+", "-"];
 
     let memory = ref("");
 
     function isOperator(string: string) {
-      const keys = Object.keys(operators).filter((key) => key !== "isOperator");
-      return keys.includes(string);
+      return operators.find((operator) => operator === string);
+    }
+
+    function lastCharIsOperator(string: string) {
+      const stringNormalized = string.replace(/\s/g, "");
+      return isOperator(stringNormalized[stringNormalized.length - 1]);
     }
 
     function addDigit(digit: number | string) {
-      if (!memory.value && digit === ".") memory.value += "0";
+      if ((!memory.value || lastCharIsOperator(memory.value)) && digit === ".") memory.value += "0";
       memory.value += `${digit}`;
     }
 
     function addOperator(operator: string) {
       if (!memory.value && operator !== "s") return;
-      if (memory.value[memory.value.length - 1] === " ") eraseLastDigit();
+      if (lastCharIsOperator(memory.value)) eraseLastDigit();
+
       memory.value += ` ${operator} `;
-    }
-
-    function calculateOperation(chars: string[]): number {
-      const operatorIndex = chars.findIndex((char) => isOperator(char));
-      if (operatorIndex === -1) return 0;
-
-      const currentOperator = chars[operatorIndex];
-
-      let firstNumber = "";
-      for (let i = operatorIndex - 1; i >= 0 && !isOperator(chars[i]); i--) {
-        firstNumber = chars[i] + firstNumber;
-      }
-
-      let secondNumber = "";
-      for (let i = operatorIndex + 1; i !== chars.length && !isOperator(chars[i]); i++) {
-        secondNumber += chars[i];
-      }
-
-      const firstNumberParsed = parseFloat(firstNumber) || 0;
-      const secondNumberParsed = parseFloat(secondNumber) || 0;
-      const result = operators[currentOperator](firstNumberParsed, secondNumberParsed);
-
-      chars.splice(operatorIndex - firstNumber.length, firstNumber.length);
-      chars.splice(operatorIndex - firstNumber.length, secondNumber.length + 1);
-      return result;
     }
 
     function calculateResult() {
       if (!memory.value) return;
 
-      let chars = memory.value.replace(/\s/g, "").split("");
-      // Remove from chars if last digit is a operator
-      if (isOperator(chars[chars.length - 1])) {
-        chars.splice(chars.length - 1, 1);
+      let mathExpression = memory.value.replace(/\s/g, ""); //remove spaces
+
+      if (lastCharIsOperator(mathExpression)) {
+        mathExpression = mathExpression.slice(0, mathExpression.length - 1);
       }
-      if (chars.findIndex((char) => isOperator(char)) === -1) {
-        return;
-      }
+      const hasValidOperation = mathExpression.split("").findIndex((char) => isOperator(char));
+      if (!hasValidOperation) return;
 
-      let result = 0;
-
-      while (chars.length !== 0) {
-        if (result) chars = [...result.toString().split(""), ...chars];
-        console.log(chars);
-
-        result = calculateOperation(chars);
-        console.log(result);
-      }
-      console.log(chars);
-      // console.log(chars);
-      // result = calculateOperation(chars);
-      // console.log(chars);
-
-      memory.value = result.toString();
+      memory.value = `${eval(memory.value)}`;
     }
 
     function eraseLastDigit() {
       if (!memory.value.length) return;
 
-      const chars = memory.value.split("");
-      // When last char is a operator, remove spaces too
-      if (chars[chars.length - 1] === " ") chars.splice(chars.length - 3, 3);
-      else chars.splice(chars.length - 1, 1);
-
-      memory.value = chars.join("");
+      if (lastCharIsOperator(memory.value)) {
+        memory.value = memory.value.slice(0, memory.value.length - 3); // remove spaces too
+      } else {
+        memory.value = memory.value.slice(0, memory.value.length - 1);
+      }
     }
 
     function clear() {
