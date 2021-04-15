@@ -33,7 +33,8 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, computed } from "vue";
+import { ref, defineComponent, computed, onMounted } from "vue";
+import KeyboardCalculatorHandler from "../shared/keyboardCalculatorHandler";
 import Button from "./Button.vue";
 import Screen from "./Screen.vue";
 import Grid from "./Grid.vue";
@@ -51,6 +52,15 @@ export default defineComponent({
     const operators = ["/", "*", "+", "-"];
     let memory = ref("");
 
+    onMounted(() => {
+      const keyboardHandler = new KeyboardCalculatorHandler();
+      keyboardHandler.on("pressDigit", (key) => addDigit(key));
+      keyboardHandler.on("pressOperator", (key) => addOperator(key));
+      keyboardHandler.on("pressResult", () => calculateResult());
+      keyboardHandler.on("pressClear", () => clear());
+      keyboardHandler.on("pressErase", () => eraseLastDigit());
+    });
+
     function isOperator(string: string) {
       return operators.find((operator) => operator === string);
     }
@@ -61,12 +71,13 @@ export default defineComponent({
     }
 
     function addDigit(digit: number | string) {
+      if (memory.value[memory.value.length - 1] === ".") return;
       if ((!memory.value || lastCharIsOperator(memory.value)) && digit === ".") memory.value += "0";
       memory.value += `${digit}`;
     }
 
     function addOperator(operator: string) {
-      if (!memory.value && operator !== "s") return;
+      if (!memory.value) return;
       if (lastCharIsOperator(memory.value)) eraseLastDigit();
       memory.value += ` ${operator} `;
     }
