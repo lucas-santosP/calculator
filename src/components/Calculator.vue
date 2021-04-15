@@ -1,44 +1,34 @@
 <template>
-  <Grid rows="6" cols="4" gap="2" class="p-2 rounded-lg bg-gray-700 w-full my-10 sm:max-w-xl">
+  <Grid
+    rows="6"
+    cols="4"
+    gap="2"
+    class="p-1 sm:p-4 rounded-lg bg-gray-600 w-full my-10 sm:max-w-md"
+  >
     <Screen :text="memory" />
 
-    <Button class="col-span-2 bg-gray-200" @click="clear">Clear</Button>
-    <Button class="bg-gray-200" @click="eraseLastDigit">Del</Button>
-    <Button variant="operator" @click="addOperator('/')">/</Button>
+    <Button variant="red" class="col-span-2 bg-gray-200" @click="clear">Clear</Button>
+    <Button variant="yellow" class="bg-gray-200" @click="eraseLastDigit">Del</Button>
+    <Button variant="green" @click="addOperator('/')">/</Button>
 
-    <Button
-      v-for="number in buttonPadNumbers[0]"
-      :key="number"
-      @click="addDigit(number)"
-      variant="digit"
-    >
+    <Button variant="blue" v-for="number in padNumbers[0]" :key="number" @click="addDigit(number)">
       {{ number }}
     </Button>
-    <Button variant="operator" @click="addOperator('*')">*</Button>
+    <Button variant="green" @click="addOperator('*')">*</Button>
 
-    <Button
-      v-for="number in buttonPadNumbers[1]"
-      :key="number"
-      @click="addDigit(number)"
-      variant="digit"
-    >
+    <Button variant="blue" v-for="number in padNumbers[1]" :key="number" @click="addDigit(number)">
       {{ number }}
     </Button>
-    <Button variant="operator" @click="addOperator('-')">-</Button>
+    <Button variant="green" @click="addOperator('-')">-</Button>
 
-    <Button
-      v-for="number in buttonPadNumbers[2]"
-      :key="number"
-      @click="addDigit(number)"
-      variant="digit"
-    >
+    <Button variant="blue" v-for="number in padNumbers[2]" :key="number" @click="addDigit(number)">
       {{ number }}
     </Button>
-    <Button variant="operator" @click="addOperator('+')">+</Button>
+    <Button variant="green" @click="addOperator('+')">+</Button>
 
-    <Button class="col-span-2" @click="addDigit(0)" variant="digit">0</Button>
-    <Button @click="addDigit('.')" variant="digit">.</Button>
-    <Button variant="operator" @click="calculateResult">=</Button>
+    <Button variant="blue" class="col-span-2" @click="addDigit(0)">0</Button>
+    <Button variant="blue" @click="addDigit('.')">.</Button>
+    <Button variant="green" @click="calculateResult">=</Button>
   </Grid>
 </template>
 
@@ -49,17 +39,16 @@ import Screen from "./Screen.vue";
 import Grid from "./Grid.vue";
 
 export default defineComponent({
-  name: "HelloWorld",
+  name: "Calculator",
   components: { Button, Screen, Grid },
 
   setup: () => {
-    const buttonPadNumbers = [
+    const padNumbers = [
       [7, 8, 9],
       [4, 5, 6],
       [1, 2, 3],
     ];
     const operators = ["/", "*", "+", "-"];
-
     let memory = ref("");
 
     function isOperator(string: string) {
@@ -79,7 +68,6 @@ export default defineComponent({
     function addOperator(operator: string) {
       if (!memory.value && operator !== "s") return;
       if (lastCharIsOperator(memory.value)) eraseLastDigit();
-
       memory.value += ` ${operator} `;
     }
 
@@ -91,10 +79,11 @@ export default defineComponent({
       if (lastCharIsOperator(mathExpression)) {
         mathExpression = mathExpression.slice(0, mathExpression.length - 1);
       }
-      const hasValidOperation = mathExpression.split("").findIndex((char) => isOperator(char));
+      const hasValidOperation = mathExpression.split("").find((char) => isOperator(char));
       if (!hasValidOperation) return;
 
-      memory.value = `${eval(memory.value)}`;
+      mathExpression = mathExpression.replace(/\b0*((\d+\.\d+|\d+))\b/g, "$1"); // remove octal numeric
+      memory.value = `${eval(mathExpression)}`;
     }
 
     function eraseLastDigit() {
@@ -115,7 +104,7 @@ export default defineComponent({
 
     return {
       memory: memoryNormalized,
-      buttonPadNumbers,
+      padNumbers,
       addDigit,
       addOperator,
       calculateResult,
@@ -125,21 +114,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-a {
-  color: #42b983;
-}
-
-label {
-  margin: 0 0.5em;
-  font-weight: bold;
-}
-
-code {
-  background-color: #eee;
-  padding: 2px 4px;
-  border-radius: 4px;
-  color: #304455;
-}
-</style>

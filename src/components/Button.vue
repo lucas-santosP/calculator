@@ -1,5 +1,8 @@
 <template>
-  <button class="h-24 p-4 rounded-lg focus:outline-none transition-all" :class="classes">
+  <button
+    :class="classes"
+    class="h-24 p-4 rounded-lg transition-all duration-300 outline-none focus:outline-none focus:ring-2 focus:ring-gray-300 active:bg-gray-400"
+  >
     <slot></slot>
   </button>
 </template>
@@ -7,7 +10,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 
-type IVariant = "default" | "digit" | "operator";
+type IVariant = "yellow" | "blue" | "green" | "red";
 
 type IVariantsClasses = {
   [key in IVariant]: string;
@@ -16,14 +19,15 @@ type IVariantsClasses = {
 export default defineComponent({
   name: "Button",
   props: {
-    variant: { type: String as PropType<IVariant>, default: "default" },
+    variant: { type: String as PropType<IVariant>, default: "blue" },
   },
 
   setup(props) {
     const variantsClasses: IVariantsClasses = {
-      default: "bg-red-400 hover:bg-red-300",
-      digit: "bg-blue-400 hover:bg-blue-300",
-      operator: "bg-yellow-400 hover:bg-yellow-300",
+      yellow: "bg-yellow-600 hover:bg-yellow-500",
+      blue: "bg-blue-600 hover:bg-blue-500",
+      green: "bg-green-600 hover:bg-green-500",
+      red: "bg-red-600 hover:bg-red-500",
     };
 
     return { classes: variantsClasses[props.variant] };
