@@ -11,7 +11,7 @@ A simple calculator app built to explore new features on Vue 3, like the composi
 
 ## Demo
 
-Demonstration online by [GitHub Pages](https://pages.github.com) on this [link](https://lucas-santosp.github.io/currency-exchange-chart/).
+Demonstration online by [GitHub Pages](https://pages.github.com) on this [link](https://lucas-santosp.github.io/calculator/).
 
 ## Project setup
 
