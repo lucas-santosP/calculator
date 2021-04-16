@@ -1,5 +1,5 @@
 <template>
-  <div class="relative col-span-4 flex justify-end items-center bg-gray-800 px-5">
+  <div class="relative flex justify-end items-center px-5 rounded-lg bg-gray-800">
     <div class="overflow-hidden text-right">
       <span v-if="!error" class="float-right whitespace-pre pr-5">
         {{ text }}

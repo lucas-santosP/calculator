@@ -3,12 +3,12 @@
     rows="6"
     cols="4"
     gap="2"
-    class="p-1 sm:p-4 rounded-lg bg-gray-600 w-full my-10 sm:max-w-md"
+    class="w-full sm:max-w-md h-screen sm:h-auto sm:my-10 p-3 pt-8 sm:rounded-lg bg-gray-600"
   >
-    <Screen :text="memory" :error="error" />
+    <Screen :text="memory" :error="error" class="col-span-4" />
 
-    <Button variant="red" class="col-span-2 bg-gray-200" @click="clear">Clear</Button>
-    <Button variant="yellow" class="bg-gray-200" @click="eraseLastDigit">Del</Button>
+    <Button variant="red" class="col-span-2" @click="clear">Clear</Button>
+    <Button variant="yellow" @click="eraseLastDigit">Del</Button>
     <Button variant="green" @click="addOperator('/')">/</Button>
 
     <Button variant="blue" v-for="number in padNumbers[0]" :key="number" @click="addDigit(number)">
