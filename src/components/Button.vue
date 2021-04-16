@@ -2,7 +2,8 @@
   <button
     :class="classes"
     @keydown.enter.prevent
-    class="sm:h-24 p-4 rounded-lg outline-none focus:outline-none focus:ring-2 focus:ring-gray-300 active:bg-gray-400"
+    @keydown.space.prevent
+    class="sm:h-24 p-4 rounded-lg focus:outline-none active:bg-gray-400"
   >
     <slot></slot>
   </button>
