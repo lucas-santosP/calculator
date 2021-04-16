@@ -5,7 +5,7 @@
     gap="2"
     class="p-1 sm:p-4 rounded-lg bg-gray-600 w-full my-10 sm:max-w-md"
   >
-    <Screen :text="memory" />
+    <Screen :text="memory" :error="error" />
 
     <Button variant="red" class="col-span-2 bg-gray-200" @click="clear">Clear</Button>
     <Button variant="yellow" class="bg-gray-200" @click="eraseLastDigit">Del</Button>
@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, computed, onMounted } from "vue";
+import { ref, defineComponent, onMounted } from "vue";
 import KeyboardCalculatorHandler from "../shared/keyboardCalculatorHandler";
 import Button from "./Button.vue";
 import Screen from "./Screen.vue";
@@ -50,7 +50,8 @@ export default defineComponent({
       [1, 2, 3],
     ];
     const operators = ["/", "*", "+", "-"];
-    let memory = ref("");
+    let memory = ref("0");
+    let error = ref(false);
     let clearOnNextDigit = ref(false);
 
     onMounted(() => {
@@ -72,8 +73,11 @@ export default defineComponent({
     }
 
     function addDigit(digit: number | string) {
+      const lastDigit = memory.value[memory.value.length - 1];
+
+      if (lastDigit === "." && digit === ".") return;
+      if (lastDigit === "0" && memory.value.length === 1) clear();
       if (clearOnNextDigit.value) clear();
-      if (memory.value[memory.value.length - 1] === "." && digit === ".") return;
       if ((!memory.value || lastCharIsOperator(memory.value)) && digit === ".") memory.value += "0";
 
       clearOnNextDigit.value = false;
@@ -92,16 +96,20 @@ export default defineComponent({
       if (!memory.value) return;
 
       let mathExpression = memory.value.replace(/\s/g, ""); //remove spaces
-
       if (lastCharIsOperator(mathExpression)) {
         mathExpression = mathExpression.slice(0, mathExpression.length - 1);
       }
       const hasValidOperation = mathExpression.split("").find((char) => isOperator(char));
       if (!hasValidOperation) return;
 
-      mathExpression = mathExpression.replace(/\b0*((\d+\.\d+|\d+))\b/g, "$1"); // remove octal numeric
-      memory.value = `${eval(mathExpression)}`;
-      clearOnNextDigit.value = true;
+      try {
+        mathExpression = mathExpression.replace(/\b0*((\d+\.\d+|\d+))\b/g, "$1"); // remove octal numeric
+        memory.value = `${eval(mathExpression)}`;
+      } catch (_) {
+        error.value = true;
+      } finally {
+        clearOnNextDigit.value = true;
+      }
     }
 
     function eraseLastDigit() {
@@ -117,12 +125,12 @@ export default defineComponent({
 
     function clear() {
       memory.value = "";
+      error.value = false;
     }
 
-    const memoryNormalized = computed(() => memory.value.replaceAll("s", "-"));
-
     return {
-      memory: memoryNormalized,
+      memory,
+      error,
       padNumbers,
       addDigit,
       addOperator,
