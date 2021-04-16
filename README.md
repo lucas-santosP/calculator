@@ -1,27 +1,36 @@
-# Vue 3 + Typescript + Vite
+# Calculator
 
-This template should help get you started developing with Vue 3 and Typescript in Vite.
+A simple calculator app built to explore new features on Vue 3, like the composition API, in use with Typescript, and tailwind CSS.
 
-## Recommended IDE Setup
+## Built With
 
-[VSCode](https://code.visualstudio.com/) + [Vetur](https://marketplace.visualstudio.com/items?itemName=octref.vetur). Make sure to enable `vetur.experimental.templateInterpolationService` in settings!
+- [Vue](https://vuejs.org) - "A progressive, incrementally-adoptable JavaScript framework for building UI on the web."
+- [Vite](https://vitejs.dev) - "A build tool that aims to provide a faster and leaner development experience for modern web projects"
+- [Typescript](https://www.typescriptlang.org) - "An open-source language which builds on JavaScript, adding static type definitions."
+- [Tailwind CSS](https://tailwindcss.com) - "A utility-first and fully responsive CSS framework."
 
-### If Using `<script setup>`
+## Demo
 
-[`<script setup>`](https://github.com/vuejs/rfcs/pull/227) is a feature that is currently in RFC stage. To get proper IDE support for the syntax, use [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) instead of Vetur (and disable Vetur).
+Demonstration online by [GitHub Pages](https://pages.github.com) on this [link](https://lucas-santosp.github.io/currency-exchange-chart/).
 
-## Type Support For `.vue` Imports in TS
+## Project setup
 
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can use the following:
+```
+npm install
+```
 
-### If Using Volar
+### Compiles and hot-reloads for development
 
-Run `Volar: Switch TS Plugin on/off` from VSCode command palette.
+```
+npm run dev
+```
 
-### If Using Vetur
+### Compiles and minifies for production
 
-1. Install and add `@vuedx/typescript-plugin-vue` to the [plugins section](https://www.typescriptlang.org/tsconfig#plugins) in `tsconfig.json`
-2. Delete `src/shims-vue.d.ts` as it is no longer needed to provide module info to Typescript
-3. Open `src/main.ts` in VSCode
-4. Open the VSCode command palette
-5. Search and run "Select TypeScript version" -> "Use workspace version"
+```
+npm run build
+```
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE.md file for details
