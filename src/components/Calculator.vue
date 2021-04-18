@@ -50,7 +50,7 @@ export default defineComponent({
       [1, 2, 3],
     ];
     const operators = ["/", "*", "+", "-"];
-    let memory = ref("0");
+    let memory = ref("");
     let error = ref(false);
     let clearOnNextDigit = ref(false);
 
@@ -99,14 +99,13 @@ export default defineComponent({
       if (lastCharIsOperator(mathExpression)) {
         mathExpression = mathExpression.slice(0, mathExpression.length - 1);
       }
-      const hasValidOperation = mathExpression.split("").find((char) => isOperator(char));
-      if (!hasValidOperation) return;
 
       try {
         mathExpression = mathExpression.replace(/\b0*((\d+\.\d+|\d+))\b/g, "$1"); // remove octal numeric
-        memory.value = `${eval(mathExpression)}`;
+        memory.value = `${eval(mathExpression) || ""}`;
       } catch (_) {
         error.value = true;
+        memory.value = "";
       } finally {
         clearOnNextDigit.value = true;
       }
