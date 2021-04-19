@@ -1,9 +1,24 @@
-import { shallowMount, mount } from "@vue/test-utils";
+import { ComponentPublicInstance } from "@vue/runtime-core";
+import { shallowMount, mount, VueWrapper } from "@vue/test-utils";
 import Calculator from "../../../src/components/Calculator.vue";
 import Screen from "../../../src/components/Screen.vue";
 
 const DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."];
 const OPERATORS = ["/", "*", "+", "-"];
+
+async function addToMemory(wrapper: VueWrapper<ComponentPublicInstance>, expression: string) {
+  const expressionNormalized = expression.replace(/\s/g, "");
+
+  expressionNormalized.split("").forEach(async (expressionChar) => {
+    const button = wrapper.findAll("button").find((button) => button.text() === expressionChar);
+    await button?.trigger("click");
+  });
+}
+
+async function clearMemory(wrapper: VueWrapper<ComponentPublicInstance>) {
+  const buttonClear = wrapper.findAll("button").find((button) => button.text() === "Clear");
+  await buttonClear?.trigger("click");
+}
 
 describe("Calculator", () => {
   it("is a vue instance", () => {
@@ -38,140 +53,134 @@ describe("Calculator", () => {
     });
   });
 
-  it("Should be able to add digits in the memory ", () => {
+  it("should initialize with empty text and no error", async () => {
+    const wrapper = mount(Calculator);
+
+    expect(wrapper.find("[data-test='text']").text()).toEqual("");
+    expect(wrapper.find("[data-test='error']").exists()).toBeFalsy();
+  });
+
+  it("Should be able to add digits", async () => {
     const wrapper = mount(Calculator);
     const buttons = wrapper.findAll("button");
 
-    // each digit
-    DIGITS.forEach((digit) => {
-      const buttonDigit = buttons.find((button) => button.text() === digit);
-      buttonDigit?.trigger("click");
-
-      if (digit === ".") {
-        expect(wrapper.vm.memory).toEqual("0.");
-      } else {
-        expect(wrapper.vm.memory).toEqual(digit);
-      }
-      wrapper.vm.memory = "";
-    });
-
-    // multiples digit
     const expectedDigits = "123.4567890";
-    expectedDigits.split("").forEach((digit) => {
+    for (const digit of expectedDigits) {
       const buttonDigit = buttons.find((button) => button.text() === digit);
-      buttonDigit?.trigger("click");
-    });
+      await buttonDigit?.trigger("click");
+    }
 
-    expect(wrapper.vm.memory).toEqual(expectedDigits);
+    expect(wrapper.find("[data-test='text']").text()).toEqual(expectedDigits);
   });
 
-  it("Should be able to add operators in the memory only after a digit", () => {
+  it("Should be able to add one operators only after a digit", async () => {
     const wrapper = mount(Calculator);
     const buttons = wrapper.findAll("button");
-    wrapper.vm.memory = "";
 
-    OPERATORS.forEach((operator) => {
+    for (const operator of OPERATORS) {
       const buttonOperator = buttons.find((button) => button.text() === operator);
-      buttonOperator?.trigger("click");
+      await buttonOperator?.trigger("click");
 
-      expect(wrapper.vm.memory).toEqual("");
-    });
+      expect(wrapper.find("[data-test='text']").text()).toEqual("");
+    }
 
-    wrapper.vm.memory = "5";
+    await addToMemory(wrapper, "5");
 
-    OPERATORS.forEach((operator) => {
+    for (const operator of OPERATORS) {
       const buttonOperator = buttons.find((button) => button.text() === operator);
-      buttonOperator?.trigger("click");
+      await buttonOperator?.trigger("click");
 
-      expect(wrapper.vm.memory).toEqual(`5 ${operator} `);
-    });
+      expect(wrapper.find("[data-test='text']").text()).toEqual(`5 ${operator}`);
+    }
   });
 
-  it("Should add 0 before the dot when the dot button is clicked without any number before", () => {
+  it("Should add 0 before the dot when the dot button is clicked without any number before", async () => {
     const wrapper = mount(Calculator);
     const buttons = wrapper.findAll("button");
-    wrapper.vm.memory = "";
 
     const buttonDot = buttons.find((button) => button.text() === ".");
-    buttonDot?.trigger("click");
-    expect(wrapper.vm.memory).toEqual("0.");
+    await buttonDot?.trigger("click");
+    expect(wrapper.find("[data-test='text']").text()).toEqual("0.");
 
-    const buttonPlus = buttons.find((button) => button.text() === "+");
-    buttonPlus?.trigger("click");
-    buttonDot?.trigger("click");
-
-    expect(wrapper.vm.memory).toEqual("0. + 0.");
+    await addToMemory(wrapper, "+");
+    await buttonDot?.trigger("click");
+    expect(wrapper.find("[data-test='text']").text()).toEqual("0. + 0.");
   });
 
-  it("Should clear the memory and error when clicked on clear button", () => {
+  it("Should clear the text and error when clicked on clear button", async () => {
     const wrapper = mount(Calculator);
     const buttons = wrapper.findAll("button");
-    wrapper.vm.memory = "5 + 9";
-    wrapper.vm.error = true;
-
     const buttonClear = buttons.find((button) => button.text() === "Clear");
-    buttonClear?.trigger("click");
-
-    expect(wrapper.vm.memory).toEqual("");
-    expect(wrapper.vm.error).toBeFalsy();
-  });
-
-  it("Should delete last digit or operator in memory when clicked on del button", () => {
-    const wrapper = mount(Calculator);
-    const buttons = wrapper.findAll("button");
-    wrapper.vm.memory = "5 + 9";
-
-    const buttonDel = buttons.find((button) => button.text() === "Del");
-    buttonDel?.trigger("click");
-    expect(wrapper.vm.memory).toEqual("5 + ");
-
-    buttonDel?.trigger("click");
-    expect(wrapper.vm.memory).toEqual("5");
-
-    buttonDel?.trigger("click");
-    expect(wrapper.vm.memory).toEqual("");
-
-    buttonDel?.trigger("click");
-    expect(wrapper.vm.memory).toEqual("");
-  });
-
-  it("Should set memory as the calculated result when clicked on result button with a valid math expression in memory", () => {
-    const wrapper = mount(Calculator);
-    const buttons = wrapper.findAll("button");
-    wrapper.vm.memory = "5 + 9";
-
     const buttonResult = buttons.find((button) => button.text() === "=");
-    buttonResult?.trigger("click");
 
-    expect(wrapper.vm.memory).toEqual("14");
+    await addToMemory(wrapper, "5 + 9");
+    await buttonClear?.trigger("click");
+    expect(wrapper.find("[data-test='text']").text()).toEqual("");
+    expect(wrapper.find("[data-test='error']").exists()).toBeFalsy();
+
+    await addToMemory(wrapper, "5.3.6 + 9"); // invalid expression
+    await buttonResult?.trigger("click");
+
+    await buttonClear?.trigger("click");
+    expect(wrapper.find("[data-test='text']").text()).toEqual("");
+    expect(wrapper.find("[data-test='error']").exists()).toBeFalsy();
   });
 
-  it("Should keep the memory digit when clicked on result button with a incomplete math expression in memory", () => {
+  it("Should delete last value in the text when clicked on del button", async () => {
     const wrapper = mount(Calculator);
-    wrapper.vm.memory = "5 + ";
+    const buttonDel = wrapper.findAll("button").find((button) => button.text() === "Del");
+
+    await addToMemory(wrapper, "5 + 9");
+    await buttonDel?.trigger("click");
+    expect(wrapper.find("[data-test='text']").text()).toEqual("5 +");
+
+    await buttonDel?.trigger("click");
+    expect(wrapper.find("[data-test='text']").text()).toEqual("5");
+
+    await buttonDel?.trigger("click");
+    expect(wrapper.find("[data-test='text']").text()).toEqual("");
+
+    await buttonDel?.trigger("click");
+    expect(wrapper.find("[data-test='text']").text()).toEqual("");
+  });
+
+  it("Should set text as the calculated result when clicked on result button with a valid math expression", async () => {
+    const wrapper = mount(Calculator);
     const buttonResult = wrapper.findAll("button").find((button) => button.text() === "=");
 
-    buttonResult?.trigger("click");
-    expect(wrapper.vm.memory).toEqual("5");
+    await addToMemory(wrapper, "14 - 9");
+    await buttonResult?.trigger("click");
+    expect(wrapper.find("[data-test='text']").text()).toEqual("5");
 
-    wrapper.vm.memory = "9";
-    buttonResult?.trigger("click");
-    expect(wrapper.vm.memory).toEqual("9");
+    await addToMemory(wrapper, "/ 2");
+    await buttonResult?.trigger("click");
+    expect(wrapper.find("[data-test='text']").text()).toEqual("2.5");
   });
 
-  it("Should set error to true and clear the memory when clicked on result button with a invalid math expression in memory", () => {
+  it("Should keep the text digit when clicked on result button with a incomplete math expression", async () => {
     const wrapper = mount(Calculator);
-    const buttons = wrapper.findAll("button");
-    const buttonResult = buttons.find((button) => button.text() === "=");
-    const invalidExpressions = ["5.5.5 + 9", "asd asdasd", "+++---/"];
+    const buttonResult = wrapper.findAll("button").find((button) => button.text() === "=");
 
-    invalidExpressions.forEach((invalidExpression) => {
-      wrapper.vm.memory = invalidExpression;
-      buttonResult?.trigger("click");
+    await addToMemory(wrapper, "3 *");
+    await buttonResult?.trigger("click");
+    expect(wrapper.find("[data-test='text']").text()).toEqual("3");
 
-      expect(wrapper.vm.memory).toEqual("");
-      expect(wrapper.vm.error).toBeTruthy();
-      wrapper.vm.clear();
-    });
+    buttonResult?.trigger("click");
+    expect(wrapper.vm.memory).toEqual("3");
+  });
+
+  it("Should display error when clicked on result button with a invalid math expression", async () => {
+    const wrapper = mount(Calculator);
+    const buttonResult = wrapper.findAll("button").find((button) => button.text() === "=");
+    const invalidExpressions = ["5.5.5 + 9", "12 + 9.9.9"];
+
+    for (const invalidExpression of invalidExpressions) {
+      await addToMemory(wrapper, invalidExpression);
+      await buttonResult?.trigger("click");
+
+      expect(wrapper.find("[data-test='text']").exists()).toBeFalsy();
+      expect(wrapper.find("[data-test='error']").text()).toEqual("Invalid expression");
+      await clearMemory(wrapper);
+    }
   });
 });
