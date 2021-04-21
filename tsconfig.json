@@ -16,6 +16,8 @@
     "src/**/*.d.ts",
     "src/**/*.vue",
     "__tests__/**/*.vue",
-    "__tests__/**/*.ts"
+    "__tests__/**/*.ts",
+    "cypress/**/*.ts",
+    "cypress/**/*.vue"
   ]
 }
