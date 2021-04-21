@@ -7,7 +7,8 @@
     "serve": "vite preview",
     "deploy": "push-dir --dir=dist --branch=gh-pages --cleanup",
     "test:unit": "jest  --watch --passWithNoTests --onlyChanged",
-    "test:all": "jest"
+    "test:all": "jest",
+    "test:e2e": "cypress open-ct"
   },
   "dependencies": {
     "vue": "^3.0.5"
