@@ -8,7 +8,7 @@
     <Screen :text="memory" :error="error" class="col-span-4" />
 
     <Button variant="red" class="col-span-2" @click="clear">Clear</Button>
-    <Button variant="yellow" @click="eraseLastDigit">Del</Button>
+    <Button variant="yellow" @click="eraseLast">Del</Button>
     <Button variant="green" @click="addOperator('/')">/</Button>
 
     <Button variant="blue" v-for="number in padNumbers[0]" :key="number" @click="addDigit(number)">
@@ -33,11 +33,18 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, onMounted } from "vue";
-import KeyboardCalculatorHandler from "../shared/keyboardCalculatorHandler";
+import { ref, defineComponent, onMounted, onBeforeUnmount } from "vue";
+import { useKeyboard } from "../compositions/useKeyboard";
 import Button from "./Button.vue";
 import Screen from "./Screen.vue";
 import Grid from "./Grid.vue";
+import {
+  DIGITS_KEYS,
+  OPERATORS_KEYS,
+  RESULT_KEYS,
+  ERASE_KEYS,
+  CLEAR_KEYS,
+} from "../shared/constants";
 
 export default defineComponent({
   name: "Calculator",
@@ -53,14 +60,22 @@ export default defineComponent({
     let memory = ref("");
     let error = ref(false);
     let clearOnNextDigit = ref(false);
+    const keyboard = useKeyboard();
 
     onMounted(() => {
-      const keyboardHandler = new KeyboardCalculatorHandler();
-      keyboardHandler.on("pressDigit", (key) => addDigit(key));
-      keyboardHandler.on("pressOperator", (key) => addOperator(key));
-      keyboardHandler.on("pressResult", () => calculateResult());
-      keyboardHandler.on("pressClear", () => clear());
-      keyboardHandler.on("pressErase", () => eraseLastDigit());
+      keyboard.addListener((e) => {
+        const key = e.key === "," ? "." : e.key;
+
+        if (DIGITS_KEYS.includes(key)) addDigit(key);
+        if (OPERATORS_KEYS.includes(key)) addOperator(key);
+        if (RESULT_KEYS.includes(key)) calculateResult();
+        if (ERASE_KEYS.includes(key)) eraseLast();
+        if (CLEAR_KEYS.includes(key)) clear();
+      });
+    });
+
+    onBeforeUnmount(() => {
+      keyboard.removeAllListeners();
     });
 
     function isOperator(string: string) {
@@ -86,7 +101,7 @@ export default defineComponent({
 
     function addOperator(operator: string) {
       if (!memory.value) return;
-      if (lastCharIsOperator(memory.value)) eraseLastDigit();
+      if (lastCharIsOperator(memory.value)) eraseLast();
 
       clearOnNextDigit.value = false;
       memory.value += ` ${operator} `;
@@ -111,7 +126,7 @@ export default defineComponent({
       }
     }
 
-    function eraseLastDigit() {
+    function eraseLast() {
       if (!memory.value.length) return;
 
       if (lastCharIsOperator(memory.value)) {
@@ -134,7 +149,7 @@ export default defineComponent({
       addDigit,
       addOperator,
       calculateResult,
-      eraseLastDigit,
+      eraseLast,
       clear,
     };
   },
