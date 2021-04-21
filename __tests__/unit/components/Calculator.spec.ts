@@ -9,10 +9,10 @@ const OPERATORS = ["/", "*", "+", "-"];
 async function addToMemory(wrapper: VueWrapper<ComponentPublicInstance>, expression: string) {
   const expressionNormalized = expression.replace(/\s/g, "");
 
-  expressionNormalized.split("").forEach(async (expressionChar) => {
+  for (const expressionChar of expressionNormalized.split("")) {
     const button = wrapper.findAll("button").find((button) => button.text() === expressionChar);
     await button?.trigger("click");
-  });
+  }
 }
 
 async function clearMemory(wrapper: VueWrapper<ComponentPublicInstance>) {
