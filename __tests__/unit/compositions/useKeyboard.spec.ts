@@ -1,4 +1,4 @@
-import { useKeyboard } from "../../src/compositions/useKeyboard";
+import { useKeyboard } from "../../../src/compositions/useKeyboard";
 
 function pressKeyOnWindow(key: string) {
   const event = new KeyboardEvent("keydown", { key });
