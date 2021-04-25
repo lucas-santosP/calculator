@@ -24,6 +24,7 @@ describe("Button", () => {
     variants.forEach((variant) => {
       const wrapper = mount(Button, { props: { variant } });
       expect(wrapper.classes().join("")).toContain(`bg-${variant ? variant : "blue"}`);
+      wrapper.unmount();
     });
   });
 });
