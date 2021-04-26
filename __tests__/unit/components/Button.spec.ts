@@ -1,6 +1,8 @@
 import { mount } from "@vue/test-utils";
 import Button from "../../../src/components/Button.vue";
 
+type IVariant = "yellow" | "blue" | "green" | "red";
+
 describe("Button", () => {
   it("is a vue instance", () => {
     const wrapper = mount(Button);
@@ -19,7 +21,7 @@ describe("Button", () => {
   });
 
   it("should change background class based on variant props", async () => {
-    const variants = [undefined, "red", "blue", "green", "yellow"];
+    const variants: IVariant[] = ["red", "blue", "green", "yellow"];
 
     variants.forEach((variant) => {
       const wrapper = mount(Button, { props: { variant } });
