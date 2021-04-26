@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { ref, readonly } from "vue";
 
 const OPERATORS = ["/", "*", "+", "-"];
 
@@ -33,7 +33,7 @@ export function useCalculate() {
     if (lastCharIsOperator(memory.value)) eraseLast();
 
     clearOnNextDigit.value = false;
-    memory.value += ` ${operator} `;
+    memory.value += `${operator}`;
   }
 
   function calculateResult() {
@@ -58,11 +58,7 @@ export function useCalculate() {
   function eraseLast() {
     if (!memory.value.length) return;
 
-    if (lastCharIsOperator(memory.value)) {
-      memory.value = memory.value.slice(0, memory.value.length - 3); // remove spaces too
-    } else {
-      memory.value = memory.value.slice(0, memory.value.length - 1);
-    }
+    memory.value = memory.value.slice(0, memory.value.length - 1);
     clearOnNextDigit.value = false;
   }
 
@@ -71,5 +67,13 @@ export function useCalculate() {
     error.value = false;
   }
 
-  return { memory, error, addDigit, addOperator, calculateResult, eraseLast, clear };
+  return {
+    memory: readonly(memory),
+    error: readonly(error),
+    addDigit,
+    addOperator,
+    calculateResult,
+    eraseLast,
+    clear,
+  };
 }

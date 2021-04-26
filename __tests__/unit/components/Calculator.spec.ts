@@ -9,10 +9,10 @@ const OPERATORS = ["/", "*", "+", "-"];
 async function addToMemory(wrapper: VueWrapper<ComponentPublicInstance>, expression: string) {
   const expressionNormalized = expression.replace(/\s/g, "");
 
-  expressionNormalized.split("").forEach(async (expressionChar) => {
+  for (const expressionChar of expressionNormalized.split("")) {
     const button = wrapper.findAll("button").find((button) => button.text() === expressionChar);
     await button?.trigger("click");
-  });
+  }
 }
 
 async function clearMemory(wrapper: VueWrapper<ComponentPublicInstance>) {
@@ -90,7 +90,7 @@ describe("Calculator", () => {
       const buttonOperator = buttons.find((button) => button.text() === operator);
       await buttonOperator?.trigger("click");
 
-      expect(wrapper.find("[data-test='text']").text()).toEqual(`5 ${operator}`);
+      expect(wrapper.find("[data-test='text']").text()).toEqual(`5${operator}`);
     }
   });
 
@@ -104,7 +104,7 @@ describe("Calculator", () => {
 
     await addToMemory(wrapper, "+");
     await buttonDot?.trigger("click");
-    expect(wrapper.find("[data-test='text']").text()).toEqual("0. + 0.");
+    expect(wrapper.find("[data-test='text']").text()).toEqual("0.+0.");
   });
 
   it("Should clear the text and error when clicked on clear button", async () => {
@@ -113,12 +113,12 @@ describe("Calculator", () => {
     const buttonClear = buttons.find((button) => button.text() === "Clear");
     const buttonResult = buttons.find((button) => button.text() === "=");
 
-    await addToMemory(wrapper, "5 + 9");
+    await addToMemory(wrapper, "5+9");
     await buttonClear?.trigger("click");
     expect(wrapper.find("[data-test='text']").text()).toEqual("");
     expect(wrapper.find("[data-test='error']").exists()).toBeFalsy();
 
-    await addToMemory(wrapper, "5.3.6 + 9"); // invalid expression
+    await addToMemory(wrapper, "5.3.6+9"); // invalid expression
     await buttonResult?.trigger("click");
 
     await buttonClear?.trigger("click");
@@ -130,9 +130,9 @@ describe("Calculator", () => {
     const wrapper = mount(Calculator);
     const buttonDel = wrapper.findAll("button").find((button) => button.text() === "Del");
 
-    await addToMemory(wrapper, "5 + 9");
+    await addToMemory(wrapper, "5+9");
     await buttonDel?.trigger("click");
-    expect(wrapper.find("[data-test='text']").text()).toEqual("5 +");
+    expect(wrapper.find("[data-test='text']").text()).toEqual("5+");
 
     await buttonDel?.trigger("click");
     expect(wrapper.find("[data-test='text']").text()).toEqual("5");
@@ -148,11 +148,11 @@ describe("Calculator", () => {
     const wrapper = mount(Calculator);
     const buttonResult = wrapper.findAll("button").find((button) => button.text() === "=");
 
-    await addToMemory(wrapper, "14 - 9");
+    await addToMemory(wrapper, "14-9");
     await buttonResult?.trigger("click");
     expect(wrapper.find("[data-test='text']").text()).toEqual("5");
 
-    await addToMemory(wrapper, "/ 2");
+    await addToMemory(wrapper, "/2");
     await buttonResult?.trigger("click");
     expect(wrapper.find("[data-test='text']").text()).toEqual("2.5");
   });
@@ -161,7 +161,7 @@ describe("Calculator", () => {
     const wrapper = mount(Calculator);
     const buttonResult = wrapper.findAll("button").find((button) => button.text() === "=");
 
-    await addToMemory(wrapper, "3 *");
+    await addToMemory(wrapper, "3*");
     await buttonResult?.trigger("click");
     expect(wrapper.find("[data-test='text']").text()).toEqual("3");
 
@@ -172,7 +172,7 @@ describe("Calculator", () => {
   it("Should display error when clicked on result button with a invalid math expression", async () => {
     const wrapper = mount(Calculator);
     const buttonResult = wrapper.findAll("button").find((button) => button.text() === "=");
-    const invalidExpressions = ["5.5.5 + 9", "12 + 9.9.9"];
+    const invalidExpressions = ["5.5.5+9", "12+9.9.9"];
 
     for (const invalidExpression of invalidExpressions) {
       await addToMemory(wrapper, invalidExpression);
