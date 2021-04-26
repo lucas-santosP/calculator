@@ -3,12 +3,8 @@ const EVENT_NAME = "keydown";
 export function useKeyboard() {
   const listeners = [] as ((e: KeyboardEvent) => void)[];
 
-  function addListener(callback: (e: KeyboardEvent) => void): number {
+  function addListener(listener: (e: KeyboardEvent) => void) {
     const listenerIndex = listeners.length;
-    const listener = (e: KeyboardEvent) => {
-      callback(e);
-    };
-
     listeners.push(listener);
     window.addEventListener(EVENT_NAME, listener);
     return listenerIndex;
