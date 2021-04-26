@@ -117,7 +117,9 @@ export default defineComponent({
 
       try {
         mathExpression = mathExpression.replace(/\b0*((\d+\.\d+|\d+))\b/g, "$1"); // remove octal numeric
-        memory.value = `${eval(mathExpression) || ""}`;
+        const evalResult = eval(mathExpression);
+        if (evalResult === undefined) throw new Error();
+        memory.value = `${evalResult}`;
       } catch (_) {
         error.value = true;
         memory.value = "";
