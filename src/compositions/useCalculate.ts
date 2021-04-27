@@ -50,16 +50,13 @@ export function useCalculate() {
   function calculateResult() {
     if (!memory.value) return;
 
-    let mathExpression = memory.value.replace(/\s/g, ""); //remove spaces
-    if (lastCharIsOperator(mathExpression)) {
-      mathExpression = mathExpression.slice(0, mathExpression.length - 1);
+    if (lastCharIsOperator(memory.value)) {
+      memory.value = memory.value.slice(0, memory.value.length - 1);
     }
 
     try {
-      mathExpression = mathExpression.replace(/\b0*((\d+\.\d+|\d+))\b/g, "$1"); // remove octal numeric
-      const evalResult = eval(mathExpression);
-      if (evalResult === undefined) throw new Error();
-      memory.value = `${evalResult}`;
+      const mathExpression = memory.value.replace(/\b0*((\d+\.\d+|\d+))\b/g, "$1"); // remove octal numeric
+      memory.value = `${eval(mathExpression)}`;
     } catch (_) {
       error.value = true;
       memory.value = "";
