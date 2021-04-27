@@ -72,15 +72,21 @@ describe("Calculator", () => {
     expect(wrapper.find("[data-test='text']").text()).toEqual(expectedDigits);
   });
 
-  it("Should be able to add one operators only after a digit", async () => {
+  it("Should be able to add operators only after a digit, expect the minus operator", async () => {
     const wrapper = mount(Calculator);
     const buttons = wrapper.findAll("button");
+    const buttonClear = buttons.find((button) => button.text() === "Clear");
 
     for (const operator of OPERATORS) {
       const buttonOperator = buttons.find((button) => button.text() === operator);
       await buttonOperator?.trigger("click");
 
-      expect(wrapper.find("[data-test='text']").text()).toEqual("");
+      if (operator === "-") {
+        expect(wrapper.find("[data-test='text']").text()).toEqual("-");
+        await buttonClear?.trigger("click");
+      } else {
+        expect(wrapper.find("[data-test='text']").text()).toEqual("");
+      }
     }
 
     await addToMemory(wrapper, "5");

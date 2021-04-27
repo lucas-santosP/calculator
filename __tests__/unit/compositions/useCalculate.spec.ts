@@ -32,13 +32,15 @@ describe("useCalculate", () => {
     expect(memory.value).toEqual("0.");
   });
 
-  it("should prevent to add operators before number", () => {
+  it("should prevent to add operators before number, expect minus operator", () => {
     const { addOperator, memory } = useCalculate();
     addOperator("+");
-    addOperator("-");
     addOperator("*");
     addOperator("/");
     expect(memory.value).toEqual("");
+
+    addOperator("-");
+    expect(memory.value).toEqual("-");
   });
 
   it("should prevent to add multiples operators in sequence", () => {

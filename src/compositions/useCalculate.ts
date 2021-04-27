@@ -40,7 +40,7 @@ export function useCalculate() {
       throw new Error("Invalid param, is not a valid operator");
     }
 
-    if (!memory.value) return;
+    if (!memory.value && operator !== "-") return;
     if (lastCharIsOperator(memory.value)) eraseLast();
 
     clearOnNextDigit.value = false;
