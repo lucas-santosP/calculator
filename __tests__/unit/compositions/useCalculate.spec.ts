@@ -26,6 +26,20 @@ describe("useCalculate", () => {
     expect(memory.value).toEqual("1");
   });
 
+  it("should add 0 before the dot when the dot is added without any number before", () => {
+    const { addDigit, memory } = useCalculate();
+    addDigit(".");
+    expect(memory.value).toEqual("0.");
+  });
+
+  it("should prevent to add multiples dot in sequence", () => {
+    const { addDigit, memory } = useCalculate();
+    addDigit(".");
+    addDigit(".");
+    addDigit(".");
+    expect(memory.value).toEqual("0.");
+  });
+
   it("should prevent to add operators before number", () => {
     const { addOperator, memory } = useCalculate();
     addOperator("+");
@@ -156,6 +170,13 @@ describe("useCalculate", () => {
     addDigit("a");
     addDigit("+");
     addOperator("5");
+    calculateResult();
+    expect(memory.value).toBe("");
+    expect(error.value).toBe(true);
+
+    addDigit(" ");
+    addDigit(" ");
+    addOperator(" ");
     calculateResult();
     expect(memory.value).toBe("");
     expect(error.value).toBe(true);
