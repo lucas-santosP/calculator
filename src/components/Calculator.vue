@@ -11,23 +11,23 @@
     <Button variant="yellow" @click="eraseLast">Del</Button>
     <Button variant="green" @click="addOperator('/')">/</Button>
 
-    <Button variant="blue" v-for="number in [7, 8, 9]" :key="number" @click="addDigit(number)">
+    <Button v-for="number in ['7', '8', '9']" :key="number" @click="addDigit(number)">
       {{ number }}
     </Button>
     <Button variant="green" @click="addOperator('*')">*</Button>
 
-    <Button variant="blue" v-for="number in [4, 5, 6]" :key="number" @click="addDigit(number)">
+    <Button v-for="number in ['4', '5', '6']" :key="number" @click="addDigit(number)">
       {{ number }}
     </Button>
     <Button variant="green" @click="addOperator('-')">-</Button>
 
-    <Button variant="blue" v-for="number in [1, 2, 3]" :key="number" @click="addDigit(number)">
+    <Button v-for="number in ['1', '2', '3']" :key="number" @click="addDigit(number)">
       {{ number }}
     </Button>
     <Button variant="green" @click="addOperator('+')">+</Button>
 
-    <Button variant="blue" class="col-span-2" @click="addDigit(0)">0</Button>
-    <Button variant="blue" @click="addDigit('.')">.</Button>
+    <Button class="col-span-2" @click="addDigit('0')">0</Button>
+    <Button @click="addDigit('.')">.</Button>
     <Button variant="green" @click="calculateResult">=</Button>
   </Grid>
 </template>
@@ -39,13 +39,7 @@ import { useKeyboard } from "../compositions/useKeyboard";
 import Button from "./Button.vue";
 import Screen from "./Screen.vue";
 import Grid from "./Grid.vue";
-import {
-  DIGITS_KEYS,
-  OPERATORS_KEYS,
-  RESULT_KEYS,
-  CLEAR_KEYS,
-  ERASE_KEYS,
-} from "../shared/constants";
+import { DIGITS, OPERATORS, RESULT_KEYS, CLEAR_KEYS, ERASE_KEYS } from "../shared/constants";
 
 export default defineComponent({
   name: "Calculator",
@@ -59,8 +53,8 @@ export default defineComponent({
       keyboard.addListener((e) => {
         const key = e.key === "," ? "." : e.key;
 
-        if (DIGITS_KEYS.includes(key)) calculate.addDigit(key);
-        if (OPERATORS_KEYS.includes(key)) calculate.addOperator(key);
+        if (DIGITS.includes(key)) calculate.addDigit(key);
+        if (OPERATORS.includes(key)) calculate.addOperator(key);
         if (RESULT_KEYS.includes(key)) calculate.calculateResult();
         if (ERASE_KEYS.includes(key)) calculate.eraseLast();
         if (CLEAR_KEYS.includes(key)) calculate.clear();

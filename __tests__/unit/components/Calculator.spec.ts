@@ -1,12 +1,11 @@
-import { ComponentPublicInstance } from "@vue/runtime-core";
 import { shallowMount, mount, VueWrapper } from "@vue/test-utils";
 import Calculator from "../../../src/components/Calculator.vue";
 import Screen from "../../../src/components/Screen.vue";
+import { OPERATORS, DIGITS } from "../../../src/shared/constants";
 
-const DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."];
-const OPERATORS = ["/", "*", "+", "-"];
+const DIGITS_WITHOUT_COMMA = DIGITS.filter((digit) => digit !== ",");
 
-async function addToMemory(wrapper: VueWrapper<ComponentPublicInstance>, expression: string) {
+async function addToMemory(wrapper: VueWrapper<any>, expression: string) {
   const expressionNormalized = expression.replace(/\s/g, "");
 
   for (const expressionChar of expressionNormalized.split("")) {
@@ -15,7 +14,7 @@ async function addToMemory(wrapper: VueWrapper<ComponentPublicInstance>, express
   }
 }
 
-async function clearMemory(wrapper: VueWrapper<ComponentPublicInstance>) {
+async function clearMemory(wrapper: VueWrapper<any>) {
   const buttonClear = wrapper.findAll("button").find((button) => button.text() === "Clear");
   await buttonClear?.trigger("click");
 }
@@ -36,7 +35,7 @@ describe("Calculator", () => {
     const wrapper = mount(Calculator);
     const buttons = wrapper.findAll("button");
 
-    DIGITS.forEach((digit) => {
+    DIGITS_WITHOUT_COMMA.forEach((digit) => {
       const buttonDigit = buttons.find((button) => button.text() === digit);
       expect(buttonDigit?.exists()).toBeTruthy();
     });

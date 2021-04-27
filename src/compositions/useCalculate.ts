@@ -1,6 +1,5 @@
 import { ref, readonly } from "vue";
-
-const OPERATORS = ["/", "*", "+", "-"];
+import { OPERATORS } from "../shared/constants";
 
 export function useCalculate() {
   let memory = ref("");
