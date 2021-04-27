@@ -1,5 +1,5 @@
 import { ref, readonly } from "vue";
-import { OPERATORS } from "../shared/constants";
+import { OPERATORS, DIGITS } from "../shared/constants";
 
 export function useCalculate() {
   let memory = ref("");
@@ -10,12 +10,20 @@ export function useCalculate() {
     return OPERATORS.includes(string);
   }
 
+  function isDigit(string: string) {
+    return DIGITS.includes(string);
+  }
+
   function lastCharIsOperator(string: string) {
     const stringNormalized = string.replace(/\s/g, "");
     return isOperator(stringNormalized[stringNormalized.length - 1]);
   }
 
-  function addDigit(digit: number | string) {
+  function addDigit(digit: string) {
+    if (!isDigit(digit)) {
+      throw new Error("Invalid param, is not a valid digit");
+    }
+
     const lastDigit = memory.value[memory.value.length - 1];
 
     if (lastDigit === "." && digit === ".") return;
@@ -28,6 +36,10 @@ export function useCalculate() {
   }
 
   function addOperator(operator: string) {
+    if (!isOperator(operator)) {
+      throw new Error("Invalid param, is not a valid operator");
+    }
+
     if (!memory.value) return;
     if (lastCharIsOperator(memory.value)) eraseLast();
 
