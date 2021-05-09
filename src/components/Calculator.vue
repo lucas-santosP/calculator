@@ -3,7 +3,7 @@
     rows="6"
     cols="4"
     gap="2"
-    class="w-full sm:max-w-md h-screen sm:h-auto sm:my-10 p-3 pt-8 sm:rounded-lg bg-gray-600"
+    class="w-full sm:max-w-md h-screen sm:h-auto sm:my-10 p-3 pt-12 sm:rounded-lg bg-gray-600"
   >
     <Screen :text="memory" :error="error" class="col-span-4" />
 

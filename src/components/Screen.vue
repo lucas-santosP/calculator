@@ -10,14 +10,16 @@
     </div>
 
     <i class="w-4 absolute bottom-5 right-5 border-b-4 bg-white animate-pulse"></i>
+    <LinkToRepository />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-
+import LinkToRepository from "./LinkToRepository.vue";
 export default defineComponent({
   name: "Screen",
+  components: { LinkToRepository },
   props: {
     text: { type: String, default: "" },
     error: { type: Boolean, default: false },
