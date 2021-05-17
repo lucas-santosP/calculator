@@ -1,8 +1,9 @@
 <template>
   <a
+    ref="linkRef"
     href="https://github.com/lucas-santosP/calculator"
     target="_blank"
-    title="Go to the reposity"
+    title="Go to the repository"
     class="absolute w-6 -top-9 left-2 transition-all hover:text-white"
   >
     <svg role="img" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -14,9 +15,23 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, onMounted, onUnmounted, ref } from "vue";
 
 export default defineComponent({
   name: "LinkToRepository",
+  setup: () => {
+    const linkRef = ref<HTMLLinkElement | null>(null);
+    const removeFocus = () => linkRef.value?.blur();
+
+    onMounted(() => {
+      linkRef.value?.addEventListener("click", removeFocus);
+    });
+
+    onUnmounted(() => {
+      linkRef.value?.removeEventListener("click", removeFocus);
+    });
+
+    return { linkRef };
+  },
 });
 </script>
