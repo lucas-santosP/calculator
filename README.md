@@ -2,6 +2,8 @@
 
 A simple calculator app built to explore new features on Vue 3, like the composition API, in use with Typescript, and tailwind CSS.
 
+Repo referenced by [Lachlan Miller](https://github.com/lmiller1990) (Cypress and Vue team member) on [this video](https://www.youtube.com/watch?v=guC3PmR-at0), as an example of refactoring Vue 3 apps to the composable architecture.
+
 ## Built With
 
 - [Vue](https://vuejs.org) - "A progressive, incrementally-adoptable JavaScript framework for building UI on the web."
